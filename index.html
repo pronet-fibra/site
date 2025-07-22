@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pronet Fibra - Internet + Streaming, tudo junto.</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Preload critical resources -->
+    <link rel="preload" href="./images/logo.png" as="image" type="image/png">
+    <link rel="preload" href="./images/bg-hero.webp" as="image" type="image/webp">
+    <link rel="preload" href="./styles.css" as="style">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    
+    <link rel="stylesheet" href="styles.css">
+    
+    <script>
+        // Configurar Tailwind após o carregamento
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof tailwind !== 'undefined') {
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            colors: {
+                                'pronet-darkblue': '#0F4C81',
+                                'pronet-lightblue': '#3498DB',
+                                'pronet-accent': '#A7FF00',
+                                'pronet-accent-dark': '#8CC600',
+                                'pronet-text-dark': '#1e293b',
+                                'pronet-text-light': '#4a5568',
+                            },
+                            fontFamily: {
+                                sans: ['Poppins', 'sans-serif'],
+                            },
+                            animation: {
+                                'float': 'float 6s ease-in-out infinite',
+                                'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                                'bounce-slow': 'bounce 3s infinite',
+                                'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
+                                'fade-in-left': 'fade-in-left 0.8s ease-out forwards',
+                                'fade-in-right': 'fade-in-right 0.8s ease-out forwards',
+                                'scale-in': 'scale-in 0.6s ease-out forwards',
+                                'glow': 'glow 2s ease-in-out infinite alternate',
+                                'slide-up': 'slide-up 0.6s ease-out forwards',
+                                'rotate-y': 'rotate-y 1s ease-in-out forwards',
+                            },
+                            keyframes: {
+                                float: {
+                                    '0%, 100%': { transform: 'translateY(0px)' },
+                                    '50%': { transform: 'translateY(-20px)' }
+                                },
+                                'fade-in-up': {
+                                    '0%': { opacity: '0', transform: 'translateY(30px)' },
+                                    '100%': { opacity: '1', transform: 'translateY(0)' }
+                                },
+                                'fade-in-left': {
+                                    '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                                    '100%': { opacity: '1', transform: 'translateX(0)' }
+                                },
+                                'fade-in-right': {
+                                    '0%': { opacity: '0', transform: 'translateX(30px)' },
+                                    '100%': { opacity: '1', transform: 'translateX(0)' }
+                                },
+                                'scale-in': {
+                                    '0%': { opacity: '0', transform: 'scale(0.8)' },
+                                    '100%': { opacity: '1', transform: 'scale(1)' }
+                                },
+                                'glow': {
+                                    '0%': { boxShadow: '0 0 20px rgba(167, 255, 0, 0.5)' },
+                                    '100%': { boxShadow: '0 0 40px rgba(167, 255, 0, 0.8)' }
+                                },
+                                'slide-up': {
+                                    '0%': { transform: 'translateY(100%)' },
+                                    '100%': { transform: 'translateY(0)' }
+                                },
+                                'rotate-y': {
+                                    '0%': { transform: 'rotateY(90deg)', opacity: '0' },
+                                    '100%': { transform: 'rotateY(0deg)', opacity: '1' }
+                                }
+                            }
+                        }
+                    }
+                };
+            }
+        });
+    </script>
+</head>
+<body class="bg-gray-50 text-pronet-text-dark">
+
+    <!-- Header -->
+    <header id="main-header" class="fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <img src="./images/logo.png" alt="Pronet Fibra Logo" class="header-logo interactive-hover">
+            <nav class="hidden md:flex space-x-8">
+                <a href="#planos" class="text-pronet-text-light hover:text-pronet-accent transition-all duration-300 hover:scale-110 font-medium">Planos</a>
+                <a href="#servicos" class="text-pronet-text-light hover:text-pronet-accent transition-all duration-300 hover:scale-110 font-medium">Serviços</a>
+                <a href="#cobertura" class="text-pronet-text-light hover:text-pronet-accent transition-all duration-300 hover:scale-110 font-medium">Cobertura</a>
+                <a href="#" id="open-recommender-modal" class="text-pronet-text-light hover:text-pronet-accent transition-all duration-300 hover:scale-110 font-medium">Recomendação</a>
+            </nav>
+            <div class="flex space-x-2 md:space-x-3">
+                <a href="https://pronetfibra.sgp.tsmx.com.br/accounts/central/login" target="_blank" class="modern-btn py-2 px-3 md:px-6 text-xs md:text-sm header-btn">
+                    <span class="hidden sm:inline">Sou Cliente</span>
+                    <span class="sm:hidden">Cliente</span>
+                </a>
+                <a href="https://wa.me/5585989932950?text=Olá! Gostaria de saber mais sobre os planos da Pronet Fibra." target="_blank" class="modern-btn py-2 px-3 md:px-6 text-xs md:text-sm font-bold header-btn">
+                    <span class="hidden sm:inline">Assine Já</span>
+                    <span class="sm:hidden">Assinar</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-end justify-center text-white relative">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="container mx-auto px-6 text-center relative z-10 pb-3">
+            <h2 class="text-4xl md:text-7xl font-black leading-tight mb-6 fade-in-up text-3d">
+                A internet que <span class="gradient-text text-glow">voa</span>.<br>
+                O streaming que você <span class="gradient-text text-glow">ama</span>.
+            </h2>
+            <p class="text-lg md:text-2xl mb-10 max-w-4xl mx-auto fade-in-up stagger-2 font-light">
+                Tudo junto, em um só plano. A combinação perfeita de ultravelocidade e entretenimento sem limites.
+            </p>
+            <a href="#planos" class="modern-btn py-4 px-10 text-lg fade-in-up stagger-3 inline-block">
+                <i class="fas fa-rocket mr-2"></i>Ver Planos
+            </a>
+        </div>
+    </section>
+
+    <!-- Planos Section -->
+    <section id="planos" class="py-24 bg-gradient-to-br from-white to-gray-50 animate-on-scroll">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold text-pronet-darkblue mb-6 gradient-text">Escolha o plano perfeito para você</h3>
+                <p class="max-w-2xl mx-auto text-pronet-text-light text-lg">Temos a velocidade ideal para sua necessidade, sempre com o melhor custo-benefício.</p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Plano 300 MEGA -->
+                <div class="plan-card bg-white p-8 rounded-2xl shadow-xl border-2 border-transparent text-center stagger-1" data-base-price="79.99" data-plan-speed="300 Mega">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-wifi text-4xl text-pronet-accent mb-4"></i>
+                        <h4 class="text-3xl font-bold mb-2 text-pronet-darkblue">300 MEGA</h4>
+                        <p class="text-pronet-text-light mb-4">Ideal para redes sociais e séries</p>
+                    </div>
+                    <div class="text-center mb-8">
+                        <p class="text-6xl font-black text-pronet-accent mb-2 gradient-text"><span id="price-300">R$79,99</span></p>
+                        <p class="text-pronet-text-light font-semibold">/mês</p>
+                    </div>
+                    <ul class="text-left space-y-3 mb-8">
+                        <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">✔</span> Internet Fibra Ótica</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">✔</span> Instalação Grátis</li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="globoplay-standard-300" class="mr-3 accent-pronet-accent globoplay-checkbox scale-125" data-plan-id="300" data-streaming-type="standard">
+                            <label for="globoplay-standard-300" class="text-pronet-darkblue font-medium">Adicionar GloboPlay (+R$22,90)</label>
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="globoplay-premium-300" class="mr-3 accent-pronet-accent globoplay-checkbox scale-125" data-plan-id="300" data-streaming-type="premium">
+                            <label for="globoplay-premium-300" class="text-pronet-darkblue font-medium">Adicionar GloboPlay Premium (+R$39,90)</label>
+                        </li>
+                    </ul>
+                    <a href="#" class="w-full modern-btn py-4 px-6 contact-plan-btn block text-center">
+                        <i class="fas fa-shopping-cart mr-2"></i>Contratar Agora
+                    </a>
+                </div>
+
+                <!-- Plano 400 MEGA (Mais Popular) -->
+                <div class="plan-card bg-white p-8 rounded-2xl shadow-2xl border-4 border-pronet-accent text-center relative stagger-2" data-base-price="99.99" data-plan-speed="400 Mega">
+                    <div class="absolute top-3 left-1/2 transform -translate-x-1/2">
+                        <span class="bg-gradient-to-r from-pronet-accent to-pronet-accent-dark text-pronet-darkblue text-sm font-bold px-6 py-2 rounded-full shadow-lg animate-pulse-slow">
+                            <i class="fas fa-crown mr-1"></i>MAIS POPULAR
+                        </span>
+                    </div>
+                    <div class="text-center mb-6 mt-4">
+                        <i class="fas fa-rocket text-4xl text-pronet-accent mb-4"></i>
+                        <h4 class="text-3xl font-bold mb-2 text-pronet-darkblue">400 MEGA</h4>
+                        <p class="text-pronet-text-light mb-4">Perfeito para home office e jogos</p>
+                    </div>
+                    <div class="text-center mb-8">
+                        <p class="text-6xl font-black text-pronet-accent mb-2 gradient-text"><span id="price-400">R$99,99</span></p>
+                        <p class="text-pronet-text-light font-semibold">/mês</p>
+                    </div>
+                    <ul class="text-left space-y-3 mb-8">
+                        <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">✔</span> Internet Fibra Ótica</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">✔</span> Instalação Grátis</li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="globoplay-standard-400" class="mr-3 accent-pronet-accent globoplay-checkbox scale-125" data-plan-id="400" data-streaming-type="standard">
+                            <label for="globoplay-standard-400" class="text-pronet-darkblue font-medium">Adicionar GloboPlay (+R$22,90)</label>
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="globoplay-premium-400" class="mr-3 accent-pronet-accent globoplay-checkbox scale-125" data-plan-id="400" data-streaming-type="premium">
+                            <label for="globoplay-premium-400" class="text-pronet-darkblue font-medium">Adicionar GloboPlay Premium (+R$39,90)</label>
+                        </li>
+                    </ul>
+                    <a href="#" class="w-full modern-btn py-4 px-6 contact-plan-btn block text-center animate-glow">
+                        <i class="fas fa-bolt mr-2"></i>Contratar Agora
+                    </a>
+                </div>
+
+                <!-- Plano 500 MEGA -->
+                <div class="plan-card bg-white p-8 rounded-2xl shadow-xl border-2 border-transparent text-center stagger-3" data-base-price="129.99" data-plan-speed="500 Mega">
+                    <div class="text-center mb-6">
+                        <i class="fas fa-bolt text-4xl text-pronet-accent mb-4"></i>
+                        <h4 class="text-3xl font-bold mb-2 text-pronet-darkblue">500 MEGA</h4>
+                        <p class="text-pronet-text-light mb-4">Para gamers e múltiplos devices</p>
+                    </div>
+                    <div class="text-center mb-8">
+                        <p class="text-6xl font-black text-pronet-accent mb-2 gradient-text"><span id="price-500">R$129,99</span></p>
+                        <p class="text-pronet-text-light font-semibold">/mês</p>
+                    </div>
+                    <ul class="text-left space-y-3 mb-8">
+                        <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">✔</span> Internet Fibra Ótica</li>
+                        <li class="flex items-center"><span class="text-green-500 mr-3 text-xl">✔</span> Instalação Grátis</li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="globoplay-standard-500" class="mr-3 accent-pronet-accent globoplay-checkbox scale-125" data-plan-id="500" data-streaming-type="standard">
+                            <label for="globoplay-standard-500" class="text-pronet-darkblue font-medium">Adicionar GloboPlay (+R$22,90)</label>
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="globoplay-premium-500" class="mr-3 accent-pronet-accent globoplay-checkbox scale-125" data-plan-id="500" data-streaming-type="premium">
+                            <label for="globoplay-premium-500" class="text-pronet-darkblue font-medium">Adicionar GloboPlay Premium (+R$39,90)</label>
+                        </li>
+                    </ul>
+                    <a href="#" class="w-full modern-btn py-4 px-6 contact-plan-btn block text-center">
+                        <i class="fas fa-gamepad mr-2"></i>Contratar Agora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Serviços Section -->
+    <section id="servicos" class="py-24 bg-gradient-to-br from-gray-50 to-gray-100 animate-on-scroll">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold text-pronet-darkblue mb-6 gradient-text">Nossos Serviços e Tecnologias</h3>
+                <p class="max-w-2xl mx-auto text-pronet-text-light text-lg">Oferecemos soluções completas com a mais alta tecnologia para garantir sua conexão e entretenimento. Clique para saber mais.</p>
+            </div>
+            <div class="flex flex-col lg:flex-row gap-12 items-center">
+                <div class="grid grid-cols-3 lg:grid-cols-1 gap-6 lg:w-1/4">
+                    <div id="btn-internet" class="service-icon active stagger-1">
+                        <i class="fa-solid fa-wifi"></i> 
+                        <span class="text-sm font-semibold">Internet</span>
+                    </div>
+                    <div id="btn-tv" class="service-icon stagger-2">
+                        <i class="fa-solid fa-tv"></i> 
+                        <span class="text-sm font-semibold">TV Digital</span>
+                    </div>
+                    <div id="btn-telefonia" class="service-icon stagger-3">
+                        <i class="fa-solid fa-phone-volume"></i> 
+                        <span class="text-sm font-semibold">Telefonia</span>
+                    </div>
+                </div>
+                <div class="lg:w-3/4 glass p-10 rounded-2xl shadow-2xl w-full min-h-[250px] relative overflow-hidden">
+                    <div id="service-description" class="relative z-10"></div>
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-pronet-accent/20 to-pronet-lightblue/20 rounded-full -translate-y-16 translate-x-16"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cobertura Section -->
+    <section id="cobertura" class="py-24 bg-gradient-to-br from-white to-pronet-lightblue/10 animate-on-scroll">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold text-pronet-darkblue mb-6 gradient-text">Nossa Área de Cobertura no Ceará</h3>
+                <p class="max-w-2xl mx-auto text-pronet-text-light text-lg">Atendemos as cidades de <strong>Paraipaba</strong> e <strong>Trairi</strong> com a melhor tecnologia de fibra ótica. Veja no mapa interativo os pontos de cobertura!</p>
+            </div>
+            <div class="relative">
+                <div id="map" class="w-full h-[500px] rounded-2xl shadow-2xl overflow-hidden border-4 border-pronet-accent z-0 relative">
+                </div>
+                <div class="absolute -top-4 -right-4 w-20 h-20 bg-gradient-to-br from-pronet-accent to-pronet-accent-dark rounded-full animate-bounce-slow opacity-30"></div>
+                <div class="absolute -bottom-4 -left-4 w-16 h-16 bg-gradient-to-br from-pronet-lightblue to-pronet-darkblue rounded-full animate-float opacity-30"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Recomendação Section -->
+    <section id="recomendar-plano" class="py-24 bg-gradient-to-r from-pronet-darkblue via-pronet-lightblue to-pronet-darkblue text-white relative overflow-hidden animate-on-scroll">
+        <div class="absolute inset-0 bg-gradient-to-r from-pronet-darkblue/90 to-pronet-lightblue/90"></div>
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <h3 class="text-4xl font-bold mb-6 text-glow">Encontre seu Plano Ideal</h3>
+            <p class="max-w-2xl mx-auto text-lg mb-10 opacity-90">
+                Responda a algumas perguntas e nosso assistente inteligente irá recomendar o plano perfeito para você!
+            </p>
+            <button id="open-recommender-modal-btn" class="modern-btn py-4 px-10 text-lg shadow-2xl">
+                <i class="fas fa-magic mr-2"></i>Iniciar Recomendação
+            </button>
+        </div>
+    </section>
+
+    <!-- Modal de Recomendação -->
+    <div id="recommender-modal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close-btn text-2xl" id="close-recommender-modal">&times;</button>
+            <div class="text-center mb-8">
+                <i class="fas fa-robot text-4xl text-pronet-accent mb-4"></i>
+                <h4 class="text-3xl font-bold text-pronet-darkblue">Qual o plano ideal para você?</h4>
+            </div>
+            <div class="space-y-6 mb-8">
+                <div class="fade-in-up stagger-1">
+                    <label for="num-people" class="block text-pronet-text-dark text-sm font-bold mb-3">
+                        <i class="fas fa-users mr-2 text-pronet-accent"></i>Quantas pessoas moram na sua casa?
+                    </label>
+                    <input type="number" id="num-people" class="w-full py-3 px-4 border-2 border-gray-200 rounded-xl focus:border-pronet-accent focus:outline-none transition-all duration-300" min="1" value="1">
+                </div>
+                <div class="fade-in-up stagger-2">
+                    <label for="main-use" class="block text-pronet-text-dark text-sm font-bold mb-3">
+                        <i class="fas fa-laptop mr-2 text-pronet-accent"></i>Principal uso da internet:
+                    </label>
+                    <select id="main-use" class="w-full py-3 px-4 border-2 border-gray-200 rounded-xl focus:border-pronet-accent focus:outline-none transition-all duration-300">
+                        <option value="streaming">🎬 Streaming de vídeos (Netflix, YouTube, etc.)</option>
+                        <option value="gaming">🎮 Jogos online</option>
+                        <option value="work">💼 Home office / Estudos</option>
+                        <option value="social">📱 Redes sociais e navegação</option>
+                        <option value="all">⭐ Todos os anteriores</option>
+                    </select>
+                </div>
+                <div class="fade-in-up stagger-3">
+                    <label for="streaming-interest" class="block text-pronet-text-dark text-sm font-bold mb-3">
+                        <i class="fas fa-tv mr-2 text-pronet-accent"></i>Interesse em streaming premium:
+                    </label>
+                    <select id="streaming-interest" class="w-full py-3 px-4 border-2 border-gray-200 rounded-xl focus:border-pronet-accent focus:outline-none transition-all duration-300">
+                        <option value="yes">🔥 Sim, muito interesse</option>
+                        <option value="some">👍 Sim, algum interesse</option>
+                        <option value="no">⚡ Não, apenas o básico</option>
+                    </select>
+                </div>
+            </div>
+            <button id="generate-recommendation" class="modern-btn py-3 px-8 w-full text-lg">
+                <i class="fas fa-search mr-2"></i>Gerar Recomendação 
+                <span id="loading-spinner" class="loading-spinner hidden"></span>
+            </button>
+            <div id="recommendation-result" class="mt-8 p-6 bg-gradient-to-r from-pronet-accent/10 to-pronet-lightblue/10 rounded-xl text-pronet-text-dark text-left hidden border-2 border-pronet-accent/20">
+                <div class="text-center mb-4">
+                    <i class="fas fa-check-circle text-3xl text-green-500"></i>
+                </div>
+                <h5 class="text-2xl font-bold mb-3 text-center gradient-text" id="recommended-plan-name"></h5>
+                <p class="mb-3 text-center text-lg">💰 Valor estimado: <span id="recommended-plan-price" class="font-bold text-pronet-accent text-xl"></span></p>
+                <p class="mb-6 text-center" id="recommended-justification"></p>
+                <a href="#" id="recommendation-contact-btn" class="modern-btn py-3 px-6 w-full text-center hidden">
+                    <i class="fas fa-whatsapp mr-2"></i>Contratar Agora
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparativo Section -->
+    <section id="comparativo" class="py-24 bg-gradient-to-br from-white to-gray-50 animate-on-scroll">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16">
+                <h3 class="text-4xl font-bold text-pronet-darkblue mb-6 gradient-text">Compare e comprove a economia</h3>
+                <p class="max-w-2xl mx-auto text-pronet-text-light text-lg mb-8">Selecione um plano para ver no gráfico como nosso combo é mais vantajoso do que assinar tudo separadamente.</p>
+                <div id="plan-selector" class="flex justify-center flex-wrap gap-4">
+                    <button data-plan="plano300" class="plan-btn modern-btn py-3 px-6 stagger-1">
+                        <i class="fas fa-wifi mr-2"></i>Plano 300 Mega
+                    </button>
+                    <button data-plan="plano400" class="plan-btn bg-gray-200 text-pronet-text-light font-semibold py-3 px-6 rounded-full transition-all duration-300 hover:bg-gray-300 stagger-2">
+                        <i class="fas fa-rocket mr-2"></i>Plano 400 Mega
+                    </button>
+                    <button data-plan="plano500" class="plan-btn bg-gray-200 text-pronet-text-light font-semibold py-3 px-6 rounded-full transition-all duration-300 hover:bg-gray-300 stagger-3">
+                        <i class="fas fa-bolt mr-2"></i>Plano 500 Mega
+                    </button>
+                </div>
+            </div>
+            <div class="chart-container">
+                <canvas id="comparisonChart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section id="assine" class="py-24 bg-gradient-to-r from-pronet-darkblue via-pronet-lightblue to-pronet-darkblue text-white relative overflow-hidden">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+        </div>
+        <div class="container mx-auto px-6 text-center relative z-10">
+            <h3 class="text-5xl font-bold mb-6 text-glow">Pronto para ter tudo?</h3>
+            <p class="text-xl max-w-3xl mx-auto mb-12 opacity-90">
+                Junte-se a milhares de clientes satisfeitos. Mude para a Pronet Fibra hoje e transforme sua experiência online.
+            </p>
+            <a href="https://wa.me/5585989932950?text=Olá! Gostaria de assinar um plano da Pronet Fibra." target="_blank" class="modern-btn py-6 px-12 text-xl shadow-2xl animate-glow">
+                <i class="fab fa-whatsapp mr-3 text-2xl"></i>QUERO ASSINAR AGORA
+            </a>
+            <p class="mt-6 text-sm opacity-75">
+                <i class="fas fa-mouse-pointer mr-2"></i>Clique no botão e venha viver essa experiência!
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-gray-800 to-gray-900 py-8 text-gray-300">
+        <div class="container mx-auto px-6 text-center">
+            <div class="mb-4">
+                <img src="./images/logo.png" alt="Pronet Fibra" class="h-12 mx-auto mb-4 opacity-80">
+            </div>
+            <p class="text-sm mb-2">&copy; 2025 Pronet Fibra Telecomunicações S.A. Todos os direitos reservados.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
